@@ -134,6 +134,39 @@ evaluation weighting; the model is held fixed.
 
 ![Specification curve](figures/specification_curve.png)
 
+## Contribution
+
+Stated in order of strength, and the third is weaker than the first two.
+
+**One. The threshold is a consequential specification choice that no existing
+method can detect.** Where the low-performance line is drawn moves the importance
+ranking by 21.25 places on average and 33 at worst, while moving predictive
+performance by 0.020. Threshold placement is almost never reported, because it
+does not present itself as an analytical decision. It is also invisible to the
+entire model-multiplicity literature: model class reliance, variable importance
+clouds and Rashomon methods all search over models that fit the same outcome, and
+the threshold changes what the outcome is. No search over well-performing models
+can recover a choice made before the models were fitted.
+
+**Two. A specification curve can separate a fragile statistic from a fragile
+conclusion.** The reported ranking moves 33 places across the grid. The
+substantive ordering does not move at all: family background matters in 48 of 48
+specifications, and mathematics disposition exceeds it in 48 of 48. Reporting
+both tells a reader that the instability was in the measuring instrument rather
+than in the world, which is actionable. A specification curve that stops at
+demonstrating variability leaves the reader with nothing to do about it.
+
+**Three. A demonstration of known theory in a case that matters.** That
+correlated predictors distort permutation importance has been established since
+Strobl and colleagues in 2008, and grouped permutation has been available since
+Gregorutti and colleagues in 2015. Neither is contributed here. What is shown is
+the severity on the most widely used variable in education research: single-feature
+permutation moves ESCS from 2nd to 35th of 35, and blocking it by OECD's own
+published construction rule removes the artefact entirely. This is a worked
+example, not a method.
+
+The first two are the argument. The third is evidence for the second.
+
 ## Reproducing
 
 The PISA data is not distributed here. Acquire it first:
@@ -290,6 +323,30 @@ and is recorded in the limitations.
   extrapolation: variable importance requires at least one more model, or there
   is no free variable importance. *Statistics and Computing* 31(6), 82.
   [doi:10.1007/s11222-021-10057-z](https://doi.org/10.1007/s11222-021-10057-z)
+
+## What would strengthen this
+
+Four things would materially change what can be claimed, and none is implemented.
+
+**Conditional permutation or a knockoff filter.** Grouped permutation removes
+substitution within a declared block but not across blocks, and the blocks are
+declared by the analyst. A conditional measure would remove the declaration step.
+Hooker, Mentch and Zhou argue that no correlation-robust importance is available
+without fitting at least one additional model; this study fits none.
+
+**Refitting per replicate weight.** The design-based intervals re-evaluate a fixed
+model under each of the 80 replicate weights. A full design-based analysis refits
+the model 80 times. The null design effect reported above should be re-examined
+under refitting before it is relied on.
+
+**A second country and a second cycle.** Every number here is UK PISA 2022. The
+threshold result is the one most likely to generalise, because it follows from
+dichotomising a continuous outcome rather than from anything specific to Britain,
+but that is an argument rather than a finding.
+
+**Tuning as a sixth axis.** Hyperparameters are fixed so that search budget cannot
+be confounded with the specification axes. That choice removes a source of
+variation rather than measuring it.
 
 ## Limitations
 
