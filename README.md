@@ -67,7 +67,9 @@ different conclusions:
 
 Where the low-performance line is drawn moves the socioeconomic ranking by 21
 places on average, and by 33 at worst, while barely moving predictive
-performance. Model family does the reverse. This matters because threshold
+performance. That dichotomising a continuous outcome costs information is long
+established (Royston, Altman and Sauerbrei, 2006); what the grid adds is that the
+cost falls on the importance ranking rather than on predictive accuracy. Model family does the reverse. This matters because threshold
 placement is not a model choice: no search over well-performing models can
 reveal it, because the outcome variable itself differs across that axis.
 
@@ -208,9 +210,14 @@ every model: how much does performance fall when this feature is shuffled.
 
 Importance is also measured for blocks of features permuted jointly, using a
 single shared row permutation per block so that within-block correlation survives
-while the block's relationship to the outcome is broken. The background block is
-ESCS together with the indices OECD uses to construct it; the disposition block is
-the two correlated mathematics attitude indices.
+while the block's relationship to the outcome is broken. This is grouped
+permutation importance as introduced by Gregorutti, Michel and Saint-Pierre, and
+it addresses the correlated-predictor bias that Strobl and colleagues diagnosed
+and answered with conditional permutation. The estimator is theirs, not this
+study's. What is applied here is the choice of blocks: the background block is
+ESCS together with HISEI, HOMEPOS and PAREDINT, which are the three indices OECD
+combines to construct ESCS, so the block is defined by the published construction
+rule rather than by analyst judgement.
 
 Uncertainty is reported two ways. The bootstrap resamples the evaluation
 partition as if the sample were simple random. The design-based interval uses
@@ -222,13 +229,21 @@ not a median split of the score distribution.
 
 ## Related work
 
-The method here is not new. Specification curve analysis was set out by Simonsohn,
-Simmons and Nelson, and the closely related multiverse analysis by Steegen,
-Tuerlinckx, Gelman and Vanpaemel. Both argue that a single reported specification
-is one draw from a distribution the reader never sees. This repository applies
-that argument to feature importance rankings from tree-based models on
-international assessment data, which is a less common setting for it than the
-effect estimates those papers address.
+The method here is not new, and neither is applying it to PISA. Specification
+curve analysis was set out by Simonsohn, Simmons and Nelson, and the closely
+related multiverse analysis by Steegen, Tuerlinckx, Gelman and Vanpaemel. Both
+argue that a single reported specification is one draw from a distribution the
+reader never sees.
+
+Robitzsch has already run a specification curve on PISA mathematics. That study
+crosses five axes over the PISA 2018 scaling model, covering the functional form
+of the item response model, country-level differential item functioning, missing
+item responses, item selection and test position effects, and reports that model
+uncertainty affects country means about as much as sampling error does. It is the
+closest precedent to this repository and differs in what it varies and what it
+tracks: it varies psychometric scaling decisions and tracks country distribution
+parameters, whereas this grid varies decisions downstream of scaling and tracks a
+feature importance ranking.
 
 The plausible value axis is not hypothetical. Rutkowski, Gonzalez, Joncas and
 von Davier document that secondary analyses of international large-scale
@@ -253,6 +268,24 @@ and is recorded in the limitations.
   International large-scale assessment data: issues in secondary analysis and
   reporting. *Educational Researcher* 39(2), 142-151.
   [doi:10.3102/0013189X10363170](https://doi.org/10.3102/0013189X10363170)
+- Robitzsch, A. (2022). Exploring the multiverse of analytical decisions in
+  scaling educational large-scale assessment data: a specification curve analysis
+  for PISA 2018 mathematics data. *European Journal of Investigation in Health,
+  Psychology and Education* 12(7), 731-753.
+  [doi:10.3390/ejihpe12070054](https://doi.org/10.3390/ejihpe12070054)
+- Gregorutti, B., Michel, B. and Saint-Pierre, P. (2015). Grouped variable
+  importance with random forests and application to multiple functional data
+  analysis. *Computational Statistics and Data Analysis* 90, 15-35.
+  [doi:10.1016/j.csda.2015.04.002](https://doi.org/10.1016/j.csda.2015.04.002)
+- Strobl, C., Boulesteix, A.-L., Kneib, T., Augustin, T. and Zeileis, A. (2008).
+  Conditional variable importance for random forests. *BMC Bioinformatics* 9, 307.
+  [doi:10.1186/1471-2105-9-307](https://doi.org/10.1186/1471-2105-9-307)
+- Royston, P., Altman, D. G. and Sauerbrei, W. (2006). Dichotomizing continuous
+  predictors in multiple regression: a bad idea. *Statistics in Medicine* 25(1),
+  127-141. [doi:10.1002/sim.2331](https://doi.org/10.1002/sim.2331)
+- Dong, J. and Rudin, C. (2020). Exploring the cloud of variable importance for
+  the set of all good models. *Nature Machine Intelligence* 2(12), 810-824.
+  [doi:10.1038/s42256-020-00264-0](https://doi.org/10.1038/s42256-020-00264-0)
 - Hooker, G., Mentch, L. and Zhou, S. (2021). Unrestricted permutation forces
   extrapolation: variable importance requires at least one more model, or there
   is no free variable importance. *Statistics and Computing* 31(6), 82.
