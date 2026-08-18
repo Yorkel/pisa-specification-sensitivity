@@ -1,0 +1,30 @@
+# PISA data is not distributed with this repository.
+data/
+*.csv
+*.sav
+*.parquet
+*.xlsx
+*.zip
+
+# Local scratch runs. The published grid output is results/v1, in JSON.
+results/*
+!results/v1/
+results/v1/*
+!results/v1/*.json
+*.log
+
+# Python
+__pycache__/
+*.py[cod]
+*.egg-info/
+.venv/
+venv/
+build/
+dist/
+.pytest_cache/
+
+# Notebooks
+.ipynb_checkpoints/
+
+# Operating system
+.DS_Store
