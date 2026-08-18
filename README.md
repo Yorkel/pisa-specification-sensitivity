@@ -1,5 +1,7 @@
 # pisa-specification-sensitivity
 
+[![tests](https://github.com/Yorkel/pisa-specification-sensitivity/actions/workflows/ci.yml/badge.svg)](https://github.com/Yorkel/pisa-specification-sensitivity/actions/workflows/ci.yml)
+
 How far does a conclusion about educational attainment move across modelling
 choices that are all individually defensible?
 
