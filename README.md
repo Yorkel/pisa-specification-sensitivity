@@ -170,6 +170,44 @@ every model: how much does performance fall when this feature is shuffled.
 The binary target marks students below a published OECD proficiency cut. It is
 not a median split of the score distribution.
 
+## Related work
+
+The method here is not new. Specification curve analysis was set out by Simonsohn,
+Simmons and Nelson, and the closely related multiverse analysis by Steegen,
+Tuerlinckx, Gelman and Vanpaemel. Both argue that a single reported specification
+is one draw from a distribution the reader never sees. This repository applies
+that argument to feature importance rankings from tree-based models on
+international assessment data, which is a less common setting for it than the
+effect estimates those papers address.
+
+The plausible value axis is not hypothetical. Rutkowski, Gonzalez, Joncas and
+von Davier document that secondary analyses of international large-scale
+assessments routinely mishandle plausible values and sampling weights. This study
+measures what that mishandling costs on one dataset rather than restating that it
+occurs.
+
+The weakness of the importance measure used here is also documented. Hooker,
+Mentch and Zhou show that permuting a feature independently of its correlates
+forces the model to extrapolate into regions with little data, which distorts
+importance for correlated features. That applies directly to the results above
+and is recorded in the limitations.
+
+- Simonsohn, U., Simmons, J. P. and Nelson, L. D. (2020). Specification curve
+  analysis. *Nature Human Behaviour* 4(11), 1208-1214.
+  [doi:10.1038/s41562-020-0912-z](https://doi.org/10.1038/s41562-020-0912-z)
+- Steegen, S., Tuerlinckx, F., Gelman, A. and Vanpaemel, W. (2016). Increasing
+  transparency through a multiverse analysis. *Perspectives on Psychological
+  Science* 11(5), 702-712.
+  [doi:10.1177/1745691616658637](https://doi.org/10.1177/1745691616658637)
+- Rutkowski, L., Gonzalez, E., Joncas, M. and von Davier, M. (2010).
+  International large-scale assessment data: issues in secondary analysis and
+  reporting. *Educational Researcher* 39(2), 142-151.
+  [doi:10.3102/0013189X10363170](https://doi.org/10.3102/0013189X10363170)
+- Hooker, G., Mentch, L. and Zhou, S. (2021). Unrestricted permutation forces
+  extrapolation: variable importance requires at least one more model, or there
+  is no free variable importance. *Statistics and Computing* 31(6), 82.
+  [doi:10.1007/s11222-021-10057-z](https://doi.org/10.1007/s11222-021-10057-z)
+
 ## Limitations
 
 Importance rankings are not causal claims. A feature ranking highly means the
@@ -194,10 +232,15 @@ weight but not the replicate weights, so the standard errors are not the ones th
 OECD analytical manual prescribes.
 
 Permutation importance is unreliable when features are strongly correlated,
-because shuffling one leaves a correlated substitute available to the model.
-Several indices here are correlated by construction, `ESCS` and `HOMEPOS` among
-them, and part of the ranking instability reported above is likely attributable
-to that rather than to the specification axes alone.
+because shuffling one leaves a correlated substitute available to the model and
+forces it to extrapolate (Hooker, Mentch and Zhou, 2021).
+Several indices here are correlated by construction. `HOMEPOS` is a component of
+`ESCS`, so the two carry overlapping information, and the eight specifications
+placing `ESCS` last should be read with that in mind rather than as evidence that
+background does not matter. Part of the ranking instability reported above is
+likely attributable to feature correlation rather than to the specification axes
+alone. A conditional or knockoff-based importance measure would separate the two;
+this study does not implement one.
 
 The grid holds hyperparameters fixed. A study varying tuning budget as a sixth
 axis would likely find further movement.
