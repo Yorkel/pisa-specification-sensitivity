@@ -88,3 +88,53 @@ def feature_importances(
     if importances.shape[0] != len(feature_names):
         raise ValueError("Importance vector does not match the feature count")
     return importances
+
+
+def grouped_permutation_importance(
+    model,
+    x_eval,
+    y_eval,
+    weights,
+    target_form: str,
+    blocks: dict[str, list[str]],
+    metric_fn,
+    n_repeats: int = PERMUTATION_REPEATS,
+    seed: int = RANDOM_SEED,
+) -> dict[str, float]:
+    """Permutation importance for blocks of features shuffled together.
+
+    Permuting a feature on its own is uninformative when a near-duplicate remains
+    in the matrix: the model reads the substitute and barely degrades. ESCS is
+    constructed by OECD from HISEI, HOMEPOS and PAREDINT, so those four cannot be
+    separated by single-feature permutation at all.
+
+    Every column in a block receives the *same* row permutation. That preserves
+    the correlation structure within the block while breaking the block's
+    relationship to the outcome, which is the quantity of interest.
+    """
+    import numpy as np
+    import pandas as pd
+
+    rng = np.random.default_rng(seed)
+    if target_form == "binary":
+        baseline = metric_fn(y_eval, model.predict_proba(x_eval)[:, 1], weights)
+    else:
+        baseline = metric_fn(y_eval, model.predict(x_eval), weights)
+
+    result: dict[str, float] = {}
+    for name, columns in blocks.items():
+        present = [c for c in columns if c in x_eval.columns]
+        if not present:
+            continue
+        drops = []
+        for _ in range(n_repeats):
+            shuffled = x_eval.copy()
+            order = rng.permutation(len(shuffled))
+            shuffled[present] = shuffled[present].to_numpy()[order]
+            if target_form == "binary":
+                score = metric_fn(y_eval, model.predict_proba(shuffled)[:, 1], weights)
+            else:
+                score = metric_fn(y_eval, model.predict(shuffled), weights)
+            drops.append(baseline - score)
+        result[name] = float(np.mean(drops))
+    return result

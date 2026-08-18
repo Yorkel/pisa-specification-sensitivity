@@ -56,3 +56,44 @@ def test_binary_metric_lies_in_the_auc_range(prepared):
     spec = Specification("pv1_only", "weighted", "random_forest", "binary", "level_2")
     record = run_cell(spec, splits, pv, seed=1)
     assert 0.0 <= record["estimate"] <= 1.0
+
+
+def test_grouped_permutation_uses_one_shared_shuffle(prepared):
+    """Within-block correlation must survive; only the block-to-outcome link breaks."""
+    import numpy as np
+    from sklearn.ensemble import RandomForestRegressor
+
+    from pisa_specsens.grid import _r2
+    from pisa_specsens.models import grouped_permutation_importance
+
+    splits, pv = prepared
+    itr, _, ite = splits.split_indices
+    y = pv["PV1MATH"].to_numpy()
+    model = RandomForestRegressor(n_estimators=50, random_state=0).fit(
+        splits.x_train, y[itr]
+    )
+    blocks = {"background": ["ESCS", "HOMEPOS"], "noise": ["BELONG"]}
+    result = grouped_permutation_importance(
+        model, splits.x_test, y[ite], splits.w_test, "continuous", blocks, _r2, seed=0
+    )
+    assert set(result) == {"background", "noise"}
+    # The synthetic outcome is built from ESCS, so the background block must
+    # matter more than an unrelated index.
+    assert result["background"] > result["noise"]
+
+
+def test_grouped_permutation_skips_absent_columns(prepared):
+    from pisa_specsens.grid import _r2
+    from pisa_specsens.models import grouped_permutation_importance
+    from sklearn.tree import DecisionTreeRegressor
+
+    splits, pv = prepared
+    itr, _, ite = splits.split_indices
+    y = pv["PV1MATH"].to_numpy()
+    model = DecisionTreeRegressor(max_depth=3, random_state=0).fit(splits.x_train, y[itr])
+    result = grouped_permutation_importance(
+        model, splits.x_test, y[ite], splits.w_test, "continuous",
+        {"absent": ["NOT_A_COLUMN"], "real": ["ESCS"]}, _r2, seed=0,
+    )
+    assert "absent" not in result
+    assert "real" in result

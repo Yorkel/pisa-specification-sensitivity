@@ -50,3 +50,28 @@ def test_bootstrap_variance_is_non_negative_and_seeded():
     second = bootstrap_variance(fn, y, s, w, 50, seed=11)
     assert first >= 0
     assert first == second
+
+
+def test_brr_variance_uses_the_fay_denominator():
+    """R = 80 and k = 0.5 give a denominator of 20, not 80."""
+    import numpy as np
+
+    from pisa_specsens.pooling import brr_variance
+
+    y = np.zeros(50)
+    score = np.zeros(50)
+    reps = np.ones((50, 4))
+    # Metric returns the mean replicate weight, so replicate r yields value r.
+    fn = lambda a, b, w: float(np.mean(w))
+    reps = np.column_stack([np.full(50, v) for v in (1.0, 2.0, 3.0, 4.0)])
+    v = brr_variance(fn, y, score, reps, point_estimate=0.0)
+    expected = sum(x**2 for x in (1, 2, 3, 4)) / (4 * 0.25)
+    assert np.isclose(v, expected)
+
+
+def test_brr_variance_is_zero_without_replicates():
+    import numpy as np
+
+    from pisa_specsens.pooling import brr_variance
+
+    assert brr_variance(lambda a, b, w: 1.0, np.zeros(3), np.zeros(3), np.empty((3, 0)), 1.0) == 0.0

@@ -156,8 +156,64 @@ def summarise(frame: pd.DataFrame) -> dict:
     return {
         "n_cells": int(len(frame)),
         "focal_rank": focal_rank_summary(frame),
+        "block_summary": block_summary(frame),
+        "design_effect": design_effect(frame),
         "top_k_stability": top_k_stability(frame),
         "metric_ranges": metric_ranges(frame).to_dict("records"),
         "axis_attribution": attribution,
         "pv_inflation": pv_inflation(frame).to_dict("records"),
+    }
+
+
+def block_summary(frame: pd.DataFrame) -> dict:
+    """Importance of jointly permuted feature blocks across the grid.
+
+    Single-feature permutation cannot separate ESCS from the indices OECD uses to
+    construct it. Permuting the whole block answers the question that the
+    single-feature ranking cannot: does family background matter at all, once its
+    components can no longer substitute for one another.
+    """
+    columns = [c for c in frame.columns if c.startswith("block_")]
+    if not columns:
+        return {}
+
+    out: dict = {"blocks": {}}
+    for column in columns:
+        values = pd.to_numeric(frame[column], errors="coerce").dropna()
+        if values.empty:
+            continue
+        out["blocks"][column.replace("block_", "")] = {
+            "median": float(values.median()),
+            "min": float(values.min()),
+            "max": float(values.max()),
+            "share_positive": float((values > 0).mean()),
+        }
+    if "top_block" in frame.columns:
+        counts = frame["top_block"].value_counts()
+        out["leading_block_counts"] = {str(k): int(v) for k, v in counts.items()}
+        out["n_specifications"] = int(len(frame))
+    return out
+
+
+def design_effect(frame: pd.DataFrame) -> dict:
+    """Width of design-based intervals against the naive bootstrap intervals.
+
+    The bootstrap resamples rows as if the sample were simple random. The
+    replicate weights respect PISA's stratified and clustered design. The ratio
+    is the cost of ignoring that design when reporting uncertainty.
+    """
+    if "design_ci_low" not in frame.columns:
+        return {}
+    subset = frame.dropna(subset=["design_ci_low", "design_ci_high"]).copy()
+    if subset.empty:
+        return {}
+    subset["naive_width"] = subset["ci_high"] - subset["ci_low"]
+    subset["design_width"] = subset["design_ci_high"] - subset["design_ci_low"]
+    ratio = subset["design_width"] / subset["naive_width"]
+    return {
+        "n_comparisons": int(len(subset)),
+        "median_width_ratio": float(ratio.median()),
+        "min_width_ratio": float(ratio.min()),
+        "max_width_ratio": float(ratio.max()),
+        "share_design_wider": float((ratio > 1).mean()),
     }

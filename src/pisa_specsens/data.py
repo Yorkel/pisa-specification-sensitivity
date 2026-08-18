@@ -13,6 +13,7 @@ from .config import (
     CANDIDATE_INDICES,
     CATEGORICAL_COLUMNS,
     PV_COLUMNS,
+    REPLICATE_WEIGHT_COLUMNS,
     WEIGHT_COLUMN,
 )
 
@@ -23,7 +24,13 @@ class DataNotFoundError(FileNotFoundError):
 
 def required_columns() -> list[str]:
     """Every column the study reads. Loading is restricted to these."""
-    return [*CANDIDATE_INDICES, *CATEGORICAL_COLUMNS, *PV_COLUMNS, WEIGHT_COLUMN]
+    return [
+        *CANDIDATE_INDICES,
+        *CATEGORICAL_COLUMNS,
+        *PV_COLUMNS,
+        WEIGHT_COLUMN,
+        *REPLICATE_WEIGHT_COLUMNS,
+    ]
 
 
 def load_pisa(path: str | Path) -> pd.DataFrame:

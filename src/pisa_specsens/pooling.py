@@ -98,3 +98,39 @@ def bootstrap_variance(metric_fn, y_true, y_score, weights, resamples: int, seed
     if len(values) < 2:
         return 0.0
     return float(np.var(values, ddof=1))
+
+
+def brr_variance(metric_fn, y_true, y_score, replicate_weights, point_estimate: float) -> float:
+    """Sampling variance from Fay balanced repeated replication weights.
+
+    PISA supplies 80 replicate weights constructed under Fay's method with a
+    coefficient of 0.5. The design-based variance is
+
+        V = 1 / (R * (1 - k)^2) * sum_r (theta_r - theta_0)^2
+
+    with R = 80 and k = 0.5, so the denominator is 20.
+
+    The fitted model is held fixed and only the weights used to evaluate it vary.
+    This captures variance arising from the sampling design, which an ordinary
+    bootstrap of rows does not, but it does not capture variance from refitting
+    the model on each replicate.
+    """
+    import numpy as np
+
+    from .config import FAY_COEFFICIENT
+
+    replicates = np.asarray(replicate_weights, dtype=float)
+    r = replicates.shape[1]
+    if r == 0:
+        return 0.0
+
+    deviations = []
+    for column in range(r):
+        try:
+            value = metric_fn(y_true, y_score, replicates[:, column])
+        except ValueError:
+            continue
+        deviations.append((value - point_estimate) ** 2)
+    if not deviations:
+        return 0.0
+    return float(np.sum(deviations) / (len(deviations) * (1.0 - FAY_COEFFICIENT) ** 2))

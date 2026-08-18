@@ -1,0 +1,430 @@
+{
+  "n_cells": 48,
+  "focal_rank": {
+    "n": 48,
+    "min_rank": 2,
+    "max_rank": 35,
+    "median_rank": 6.5,
+    "share_rank_1": 0.0,
+    "share_top_3": 0.22916666666666666,
+    "distribution": {
+      "2": 1,
+      "3": 10,
+      "4": 10,
+      "5": 2,
+      "6": 1,
+      "7": 2,
+      "8": 5,
+      "9": 1,
+      "10": 1,
+      "13": 2,
+      "14": 1,
+      "15": 1,
+      "17": 2,
+      "24": 1,
+      "33": 1,
+      "34": 4,
+      "35": 3
+    }
+  },
+  "block_summary": {
+    "blocks": {
+      "background": {
+        "median": 0.04713066713126088,
+        "min": 0.00783949315387853,
+        "max": 0.12561797744690573,
+        "share_positive": 1.0
+      },
+      "disposition": {
+        "median": 0.1357927008990928,
+        "min": 0.05636614486424598,
+        "max": 0.4381248342828634,
+        "share_positive": 1.0
+      }
+    },
+    "leading_block_counts": {
+      "disposition": 48
+    },
+    "n_specifications": 48
+  },
+  "design_effect": {
+    "n_comparisons": 24,
+    "median_width_ratio": 0.9979343983479945,
+    "min_width_ratio": 0.9149001537588942,
+    "max_width_ratio": 1.0836645474417308,
+    "share_design_wider": 0.4583333333333333
+  },
+  "top_k_stability": {
+    "n_specifications": 48,
+    "distinct_top_k_sets": 28,
+    "mean_pairwise_jaccard": 0.5353800799279522,
+    "features_in_every_top_k": [
+      "MATHEFF"
+    ],
+    "appearance_counts": {
+      "MATHEFF": 48,
+      "HOMEPOS": 46,
+      "FAMCON": 41,
+      "WORKPAY": 24,
+      "ESCS": 23,
+      "DISCLIM": 22,
+      "EXPO21ST": 9,
+      "TARDYSD": 9,
+      "ANXMAT": 4,
+      "ICTRES": 2,
+      "SCHRISK": 2,
+      "GROSAGR": 2,
+      "WORKHOME": 2,
+      "COGACRCO": 1,
+      "STUDYHMW": 1,
+      "STRESAGR": 1,
+      "TEACHSUP": 1,
+      "FAMSUP": 1,
+      "HISEI": 1
+    }
+  },
+  "metric_ranges": [
+    {
+      "target_form": "binary",
+      "metric": "weighted_auc",
+      "n_cells": 36,
+      "min": 0.6961502049285009,
+      "max": 0.8184128529972241,
+      "range": 0.12226264806872322,
+      "median": 0.7861357409482951,
+      "widest_ci": 0.10078327709387369
+    },
+    {
+      "target_form": "continuous",
+      "metric": "weighted_r2",
+      "n_cells": 12,
+      "min": 0.23543103748628047,
+      "max": 0.43302102711996693,
+      "range": 0.19758998963368646,
+      "median": 0.34799510808414524,
+      "widest_ci": 0.112570983966368
+    }
+  ],
+  "axis_attribution": {
+    "estimate": [
+      {
+        "axis": "model_family",
+        "outcome": "estimate",
+        "mean_within_set_range": 0.08265508366850438,
+        "max_within_set_range": 0.13490393475044604,
+        "matched_sets": 16
+      },
+      {
+        "axis": "weighting",
+        "outcome": "estimate",
+        "mean_within_set_range": 0.03710496724683474,
+        "max_within_set_range": 0.09008661173153854,
+        "matched_sets": 24
+      },
+      {
+        "axis": "threshold",
+        "outcome": "estimate",
+        "mean_within_set_range": 0.02004039043771898,
+        "max_within_set_range": 0.055190865188706084,
+        "matched_sets": 12
+      },
+      {
+        "axis": "pv_handling",
+        "outcome": "estimate",
+        "mean_within_set_range": 0.008016711711351883,
+        "max_within_set_range": 0.023859658108513426,
+        "matched_sets": 24
+      }
+    ],
+    "focal_rank": [
+      {
+        "axis": "threshold",
+        "outcome": "focal_rank",
+        "mean_within_set_range": 21.25,
+        "max_within_set_range": 33.0,
+        "matched_sets": 12
+      },
+      {
+        "axis": "model_family",
+        "outcome": "focal_rank",
+        "mean_within_set_range": 11.5625,
+        "max_within_set_range": 31.0,
+        "matched_sets": 16
+      },
+      {
+        "axis": "pv_handling",
+        "outcome": "focal_rank",
+        "mean_within_set_range": 5.333333333333333,
+        "max_within_set_range": 28.0,
+        "matched_sets": 24
+      },
+      {
+        "axis": "weighting",
+        "outcome": "focal_rank",
+        "mean_within_set_range": 2.75,
+        "max_within_set_range": 16.0,
+        "matched_sets": 24
+      }
+    ]
+  },
+  "pv_inflation": [
+    {
+      "weighting": "unweighted",
+      "model_family": "pruned_tree",
+      "target_form": "binary",
+      "threshold": "level_2",
+      "pooled_rubin": 0.06040209519989803,
+      "pv1_only": 0.03822228180458653,
+      "width_ratio": 1.5802849110031416
+    },
+    {
+      "weighting": "weighted",
+      "model_family": "pruned_tree",
+      "target_form": "binary",
+      "threshold": "level_2",
+      "pooled_rubin": 0.07594337724907052,
+      "pv1_only": 0.0552528224061255,
+      "width_ratio": 1.3744705508591575
+    },
+    {
+      "weighting": "unweighted",
+      "model_family": "gradient_boosting",
+      "target_form": "binary",
+      "threshold": "level_1a",
+      "pooled_rubin": 0.06928541614067774,
+      "pv1_only": 0.05110208855906806,
+      "width_ratio": 1.3558235699230154
+    },
+    {
+      "weighting": "weighted",
+      "model_family": "pruned_tree",
+      "target_form": "binary",
+      "threshold": "level_3",
+      "pooled_rubin": 0.08010292973669819,
+      "pv1_only": 0.05917678285017103,
+      "width_ratio": 1.3536208945239523
+    },
+    {
+      "weighting": "unweighted",
+      "model_family": "pruned_tree",
+      "target_form": "continuous",
+      "threshold": NaN,
+      "pooled_rubin": 0.08158702610883051,
+      "pv1_only": 0.06063430281334714,
+      "width_ratio": 1.345558905162692
+    },
+    {
+      "weighting": "weighted",
+      "model_family": "gradient_boosting",
+      "target_form": "binary",
+      "threshold": "level_1a",
+      "pooled_rubin": 0.09717747868860926,
+      "pv1_only": 0.07224839382847237,
+      "width_ratio": 1.3450469074692786
+    },
+    {
+      "weighting": "unweighted",
+      "model_family": "random_forest",
+      "target_form": "binary",
+      "threshold": "level_1a",
+      "pooled_rubin": 0.07022650704936328,
+      "pv1_only": 0.05242488618261554,
+      "width_ratio": 1.3395643207452663
+    },
+    {
+      "weighting": "unweighted",
+      "model_family": "random_forest",
+      "target_form": "binary",
+      "threshold": "level_2",
+      "pooled_rubin": 0.04468185007185177,
+      "pv1_only": 0.03386710950849814,
+      "width_ratio": 1.319328715095687
+    },
+    {
+      "weighting": "weighted",
+      "model_family": "gradient_boosting",
+      "target_form": "binary",
+      "threshold": "level_2",
+      "pooled_rubin": 0.06591302530649346,
+      "pv1_only": 0.0540599213671058,
+      "width_ratio": 1.2192586233874916
+    },
+    {
+      "weighting": "unweighted",
+      "model_family": "pruned_tree",
+      "target_form": "binary",
+      "threshold": "level_1a",
+      "pooled_rubin": 0.07706389903897981,
+      "pv1_only": 0.06356048569743744,
+      "width_ratio": 1.2124498136439945
+    },
+    {
+      "weighting": "weighted",
+      "model_family": "pruned_tree",
+      "target_form": "binary",
+      "threshold": "level_1a",
+      "pooled_rubin": 0.10078327709387369,
+      "pv1_only": 0.08462291339293881,
+      "width_ratio": 1.1909691247085255
+    },
+    {
+      "weighting": "weighted",
+      "model_family": "random_forest",
+      "target_form": "binary",
+      "threshold": "level_1a",
+      "pooled_rubin": 0.09639371614625314,
+      "pv1_only": 0.08106283160232941,
+      "width_ratio": 1.1891234767017833
+    },
+    {
+      "weighting": "unweighted",
+      "model_family": "pruned_tree",
+      "target_form": "binary",
+      "threshold": "level_3",
+      "pooled_rubin": 0.04153336976045274,
+      "pv1_only": 0.03500285212203491,
+      "width_ratio": 1.186571014717591
+    },
+    {
+      "weighting": "unweighted",
+      "model_family": "gradient_boosting",
+      "target_form": "binary",
+      "threshold": "level_2",
+      "pooled_rubin": 0.03972358050422442,
+      "pv1_only": 0.033649231819093295,
+      "width_ratio": 1.1805196837119
+    },
+    {
+      "weighting": "weighted",
+      "model_family": "random_forest",
+      "target_form": "binary",
+      "threshold": "level_2",
+      "pooled_rubin": 0.06100942267642484,
+      "pv1_only": 0.0524741803370834,
+      "width_ratio": 1.1626560393037642
+    },
+    {
+      "weighting": "weighted",
+      "model_family": "random_forest",
+      "target_form": "binary",
+      "threshold": "level_3",
+      "pooled_rubin": 0.06017451755325065,
+      "pv1_only": 0.05197940269903767,
+      "width_ratio": 1.1576608123348964
+    },
+    {
+      "weighting": "unweighted",
+      "model_family": "gradient_boosting",
+      "target_form": "continuous",
+      "threshold": NaN,
+      "pooled_rubin": 0.062377656032132744,
+      "pv1_only": 0.0553223660174722,
+      "width_ratio": 1.1275305183518778
+    },
+    {
+      "weighting": "weighted",
+      "model_family": "gradient_boosting",
+      "target_form": "continuous",
+      "threshold": NaN,
+      "pooled_rubin": 0.09756311021137698,
+      "pv1_only": 0.08779623928316693,
+      "width_ratio": 1.1112447527132594
+    },
+    {
+      "weighting": "unweighted",
+      "model_family": "gradient_boosting",
+      "target_form": "binary",
+      "threshold": "level_3",
+      "pooled_rubin": 0.0351413320141607,
+      "pv1_only": 0.032059759797225196,
+      "width_ratio": 1.0961196289811945
+    },
+    {
+      "weighting": "unweighted",
+      "model_family": "random_forest",
+      "target_form": "binary",
+      "threshold": "level_3",
+      "pooled_rubin": 0.036400584667392044,
+      "pv1_only": 0.03322053066488584,
+      "width_ratio": 1.095725563043685
+    },
+    {
+      "weighting": "unweighted",
+      "model_family": "random_forest",
+      "target_form": "continuous",
+      "threshold": NaN,
+      "pooled_rubin": 0.06102604651726562,
+      "pv1_only": 0.055866496948235866,
+      "width_ratio": 1.0923549864565596
+    },
+    {
+      "weighting": "weighted",
+      "model_family": "gradient_boosting",
+      "target_form": "binary",
+      "threshold": "level_3",
+      "pooled_rubin": 0.055420329302945825,
+      "pv1_only": 0.05219866951736951,
+      "width_ratio": 1.0617191935228212
+    },
+    {
+      "weighting": "weighted",
+      "model_family": "pruned_tree",
+      "target_form": "continuous",
+      "threshold": NaN,
+      "pooled_rubin": 0.112570983966368,
+      "pv1_only": 0.1118018428904681,
+      "width_ratio": 1.0068795026630593
+    },
+    {
+      "weighting": "weighted",
+      "model_family": "random_forest",
+      "target_form": "continuous",
+      "threshold": NaN,
+      "pooled_rubin": 0.09762014844818423,
+      "pv1_only": 0.09774291266393709,
+      "width_ratio": 0.9987440090293304
+    }
+  ],
+  "run": {
+    "n_rows": 12972,
+    "n_features": 35,
+    "features": [
+      "ESCS",
+      "HOMEPOS",
+      "HISEI",
+      "PAREDINT",
+      "ICTRES",
+      "BELONG",
+      "ANXMAT",
+      "MATHEFF",
+      "MATHPERS",
+      "TEACHSUP",
+      "DISCLIM",
+      "FAMSUP",
+      "BULLIED",
+      "FEELSAFE",
+      "EXPOFA",
+      "EXPO21ST",
+      "COGACRCO",
+      "CURIOAGR",
+      "GROSAGR",
+      "STRESAGR",
+      "RELATST",
+      "SCHRISK",
+      "FAMCON",
+      "ICTHOME",
+      "ICTSCH",
+      "WORKPAY",
+      "WORKHOME",
+      "SKIPPING",
+      "TARDYSD",
+      "STUDYHMW",
+      "MATHPREF",
+      "ST004D01T_2.0",
+      "REGION_82612.0",
+      "REGION_82613.0",
+      "REGION_82620.0"
+    ],
+    "seed": 20220101
+  }
+}

@@ -23,6 +23,11 @@ PV_COLUMNS = [f"PV{i}MATH" for i in range(1, 11)]
 # Final student weight.
 WEIGHT_COLUMN = "W_FSTUWT"
 
+# PISA supplies 80 Fay balanced repeated replication weights. The OECD analytical
+# manual prescribes these for standard errors under the complex sampling design.
+REPLICATE_WEIGHT_COLUMNS = [f"W_FSTURWT{i}" for i in range(1, 81)]
+FAY_COEFFICIENT = 0.5
+
 # Standard PISA derived indices (weighted likelihood estimates). Using the
 # published indices rather than raw questionnaire items keeps the feature set
 # documented and comparable to other PISA work. Indices with more than 30%
@@ -51,6 +56,20 @@ BOOTSTRAP_RESAMPLES = 400
 
 # Repeats used when measuring permutation importance on the held-out partition.
 PERMUTATION_REPEATS = 5
+
+# Features that OECD combines to construct ESCS, plus the home ICT resource index
+# that overlaps with home possessions. Permuting any one of these alone leaves the
+# others available as substitutes, so the group is also permuted jointly.
+BACKGROUND_BLOCK = ["ESCS", "HISEI", "HOMEPOS", "PAREDINT", "ICTRES"]
+
+# Mathematics disposition items that correlate with each other. Included so that
+# the stability of MATHEFF is subjected to the same test as ESCS.
+DISPOSITION_BLOCK = ["MATHEFF", "FAMCON"]
+
+FEATURE_BLOCKS = {
+    "background": BACKGROUND_BLOCK,
+    "disposition": DISPOSITION_BLOCK,
+}
 
 # The feature whose rank stability is the headline conclusion of the study.
 FOCAL_FEATURE = "ESCS"

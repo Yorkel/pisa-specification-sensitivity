@@ -18,6 +18,7 @@ from .config import (
     MISSINGNESS_DROP_THRESHOLD,
     PROFICIENCY_CUTS,
     RANDOM_SEED,
+    REPLICATE_WEIGHT_COLUMNS,
     TEST_SIZE,
     VAL_SIZE,
     WEIGHT_COLUMN,
@@ -35,6 +36,7 @@ class Splits:
     w_val: np.ndarray
     w_test: np.ndarray
     feature_names: list[str]
+    rep_test: np.ndarray | None = None
 
 
 def select_features(frame: pd.DataFrame) -> list[str]:
@@ -96,10 +98,16 @@ def impute_median(splits: Splits) -> Splits:
         w_val=splits.w_val,
         w_test=splits.w_test,
         feature_names=splits.feature_names,
+        rep_test=splits.rep_test,
     )
 
 
-def split_data(design: pd.DataFrame, weights: pd.Series, seed: int = RANDOM_SEED) -> Splits:
+def split_data(
+    design: pd.DataFrame,
+    weights: pd.Series,
+    seed: int = RANDOM_SEED,
+    replicates: pd.DataFrame | None = None,
+) -> Splits:
     """Partition into train, validation and test with a fixed seed.
 
     The split is computed once from the design matrix and reused for every
@@ -120,6 +128,9 @@ def split_data(design: pd.DataFrame, weights: pd.Series, seed: int = RANDOM_SEED
         w_val=w[idx_val],
         w_test=w[idx_test],
         feature_names=list(design.columns),
+        rep_test=(
+            replicates.to_numpy(dtype=float)[idx_test] if replicates is not None else None
+        ),
     )
     splits = impute_median(splits)
     splits.split_indices = (idx_train, idx_val, idx_test)  # type: ignore[attr-defined]
@@ -134,4 +145,9 @@ def prepare(frame: pd.DataFrame, seed: int = RANDOM_SEED) -> tuple[Splits, pd.Da
     weights = frame.loc[complete, WEIGHT_COLUMN].reset_index(drop=True)
     pv_frame = frame.loc[complete, [c for c in frame.columns if c.startswith("PV")]]
     pv_frame = pv_frame.reset_index(drop=True)
-    return split_data(design, weights, seed=seed), pv_frame
+
+    rep_columns = [c for c in REPLICATE_WEIGHT_COLUMNS if c in frame.columns]
+    replicates = (
+        frame.loc[complete, rep_columns].reset_index(drop=True) if rep_columns else None
+    )
+    return split_data(design, weights, seed=seed, replicates=replicates), pv_frame

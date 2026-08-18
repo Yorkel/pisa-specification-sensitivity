@@ -35,10 +35,11 @@ budget.
 
 ## Headline result
 
-Across 48 specifications fitted to 12,972 UK students and 35 features:
+Across 48 specifications fitted to 12,972 UK students and 35 features, the study
+produced a two-part result. The reported quantity is unstable. The substantive
+conclusion underneath it is not.
 
-**The rank of socioeconomic status is not stable, and the threshold choice moves
-it most.**
+### The single-feature ranking is unstable, and the threshold drives it
 
 | Quantity | Result |
 |---|---:|
@@ -50,9 +51,8 @@ it most.**
 
 ![Rank of ESCS across the grid](figures/escs_rank.png)
 
-The distribution is bimodal. ESCS clusters between third and eighth in most
-specifications, then collapses to last place in eight of them. It is never the
-leading predictor under permutation importance in any cell of the grid.
+The distribution is bimodal. ESCS sits between third and eighth in 30 of the 48
+specifications, then collapses to last place in eight of them.
 
 Movement is attributed by comparing only cells that are identical except on the
 axis in question, and averaging the within-set range. Different axes drive
@@ -66,32 +66,69 @@ different conclusions:
 | Survey weights | 2.75 places | 0.037 |
 
 Where the low-performance line is drawn moves the socioeconomic ranking by 21
-places on average, and by 33 places at worst, while barely moving predictive
-performance. Model family does the reverse: it dominates performance and matters
-less for the ranking. A study reporting one specification reports one draw from
-this distribution.
+places on average, and by 33 at worst, while barely moving predictive
+performance. Model family does the reverse. This matters because threshold
+placement is not a model choice: no search over well-performing models can
+reveal it, because the outcome variable itself differs across that axis.
 
-**Performance itself spans a wide band.**
+### The instability is an artefact of the measure, not of the data
+
+ESCS correlates 0.807 with HISEI, 0.753 with HOMEPOS and 0.739 with PAREDINT,
+because OECD constructs ESCS from those indices. Permuting ESCS alone leaves
+three substitutes in the matrix, so the model barely degrades and ESCS appears
+unimportant. Permuting the whole block jointly removes the substitutes.
+
+| Block permuted jointly | Median drop | Range | Positive in |
+|---|---:|---:|---:|
+| Family background (ESCS, HISEI, HOMEPOS, PAREDINT, ICTRES) | 0.047 | 0.008 to 0.126 | 48 of 48 |
+| Mathematics disposition (MATHEFF, FAMCON) | 0.136 | 0.056 to 0.438 | 48 of 48 |
+
+![Block importance across the grid](figures/block_importance.png)
+
+Family background matters in every single specification. Mathematics disposition
+matters more in every single specification, without exception. The ordering never
+reverses across any combination of plausible value handling, weighting, model
+family, target formulation or threshold.
+
+So the specification curve did not find that the substantive conclusion is
+fragile. It found that the reported statistic is fragile. A study reporting the
+rank of ESCS reports something that moves 33 places on an arbitrary threshold
+choice; a study reporting jointly permuted blocks reports something that does not
+move at all. The instability was diagnostic of the metric.
+
+### Performance spans a wide band
 
 | Target | Metric | Range across the grid | Median |
 |---|---|---:|---:|
 | Binary | Weighted AUC | 0.696 to 0.818 | 0.786 |
 | Continuous | Weighted R² | 0.235 to 0.433 | 0.348 |
 
-The continuous R² nearly doubles from one end of the grid to the other. Both
-figures are defensible; neither is the answer.
+The continuous R² nearly doubles from one end of the grid to the other.
+Dichotomising the outcome also suppresses measured importance: the background
+block scores a median 0.106 under the continuous target against 0.040 to 0.047
+under the three binary thresholds.
 
-**Analysing one plausible value understates uncertainty.** In 23 of 24 matched
-comparisons, pooling all ten widened the confidence interval. The median interval
-was 1.19 times wider once between-imputation variance was restored, and 1.58
-times wider at the extreme. Among pooled cells, between-imputation variance was a
-median 25.8% of total variance and reached 55.0%. A single-plausible-value
-analysis discards that component entirely.
+### Analysing one plausible value understates uncertainty
 
-**One predictor is stable.** Mathematics self-efficacy (`MATHEFF`) appears in the
-top five of all 48 specifications. No other feature does. The grid produced 28
-distinct top-five sets, with a mean pairwise Jaccard similarity of 0.535, so
-roughly half the reported leading predictors change with the specification.
+In 23 of 24 matched comparisons, pooling all ten plausible values widened the
+confidence interval. The median interval was 1.19 times wider once
+between-imputation variance was restored, and 1.58 times wider at the extreme.
+Among pooled cells, between-imputation variance was a median 25.8% of total
+variance and reached 55.0%. A single-plausible-value analysis discards that
+component entirely.
+
+### Replicate weights made almost no difference here
+
+PISA supplies 80 Fay replicate weights for design-based standard errors. Using
+them in place of an ordinary bootstrap of the evaluation partition changed
+interval width by a median factor of 0.998, ranging from 0.915 to 1.084, and
+produced a wider interval in only 11 of 24 comparisons.
+
+This is a null result and is reported as one. It says that for held-out AUC and
+R² on this sample, the naive interval was already about the right width. It does
+not generalise to means, proportions or regression coefficients, where design
+effects in PISA are known to be substantial. The replicate weights vary only the
+evaluation weighting; the model is held fixed.
 
 ![Specification curve](figures/specification_curve.png)
 
@@ -109,12 +146,12 @@ the UK extract. Verify a prepared extract with:
 Then install and run the grid:
 
     pip install -e '.[test]'
-    pisa-specsens --data data/uk_pisa_2022.csv --out results/v1
+    pisa-specsens --data data/uk_pisa_2022.csv --out results/v2
 
 The command writes `grid_results.csv`, `grid_results.json` and `summary.json`
 into the named directory, and refuses to write into a directory that already
 holds files. The output behind every number reported above is published under
-[results/v1](results/v1), so the figures and the headline table can be checked
+[results/v2](results/v2), so the figures and the headline table can be checked
 without obtaining the PISA data. Results directories name a version; overwriting one silently would
 make a published figure impossible to trace to the run that produced it.
 
@@ -127,7 +164,7 @@ Run the test suite, which is offline and needs no PISA data:
 
     pytest
 
-The full grid took 6.1 minutes on an Apple silicon laptop with parallel fitting
+The full grid took 7.5 minutes on an Apple silicon laptop with parallel fitting
 enabled. Pooled cells fit ten models each, so 48 cells are 264 fits.
 
 ## Repository structure
@@ -144,6 +181,8 @@ enabled. Pooled cells fit ten models each, so 48 cells are 264 fits.
 
     tests/                  offline tests on small synthetic frames
     scripts/                data acquisition and verification
+    docs/related_research.md what the prior literature establishes
+    results/v2/             the grid output behind every number reported here
     notebooks/figures.ipynb figure production only, no analysis
 
 Training and analysis call the same preprocessing functions. Two specifications
@@ -166,6 +205,17 @@ built-in impurity importance. Trees, forests and boosters compute impurity
 importance by different internal definitions, so those numbers are not comparable
 across the model-family axis. Permutation importance asks the same question of
 every model: how much does performance fall when this feature is shuffled.
+
+Importance is also measured for blocks of features permuted jointly, using a
+single shared row permutation per block so that within-block correlation survives
+while the block's relationship to the outcome is broken. The background block is
+ESCS together with the indices OECD uses to construct it; the disposition block is
+the two correlated mathematics attitude indices.
+
+Uncertainty is reported two ways. The bootstrap resamples the evaluation
+partition as if the sample were simple random. The design-based interval uses
+PISA's 80 Fay replicate weights with a coefficient of 0.5, giving a variance
+denominator of 20. Both hold the fitted model fixed.
 
 The binary target marks students below a published OECD proficiency cut. It is
 not a median split of the score distribution.
@@ -226,10 +276,10 @@ fitted model held fixed. They capture evaluation uncertainty and, for pooled
 cells, between-imputation uncertainty. They do not capture uncertainty from
 refitting the model, so they are narrower than a full accounting would give.
 
-PISA supplies 80 balanced repeated replication weights for correct standard
-errors under its complex sampling design. This study uses the final student
-weight but not the replicate weights, so the standard errors are not the ones the
-OECD analytical manual prescribes.
+The replicate weights are applied only to re-evaluate a fixed model, not to refit
+it 80 times. A full design-based analysis would refit per replicate, which the
+grid does not do on cost grounds. The reported null design effect should be read
+with that restriction in mind.
 
 Permutation importance is unreliable when features are strongly correlated,
 because shuffling one leaves a correlated substitute available to the model and
@@ -238,9 +288,13 @@ Several indices here are correlated by construction. `HOMEPOS` is a component of
 `ESCS`, so the two carry overlapping information, and the eight specifications
 placing `ESCS` last should be read with that in mind rather than as evidence that
 background does not matter. Part of the ranking instability reported above is
-likely attributable to feature correlation rather than to the specification axes
-alone. A conditional or knockoff-based importance measure would separate the two;
-this study does not implement one.
+attributable to feature correlation rather than to the specification axes alone.
+The grouped permutation reported above is a partial remedy, not a complete one:
+it removes substitution within a declared block but does not address correlation
+across blocks, and the blocks are declared by the analyst rather than discovered.
+A conditional or knockoff-based measure, or the additional model that Hooker,
+Mentch and Zhou argue is unavoidable, would be the fuller answer. This study
+implements none of those.
 
 The grid holds hyperparameters fixed. A study varying tuning budget as a sixth
 axis would likely find further movement.
@@ -258,8 +312,13 @@ teacher-level modelling. The PISA school and teacher files are not read.
 
 No PISA data. The extract is roughly 53MB and is not redistributed here.
 
+No conditional variable importance, knockoff filter, or model class reliance
+computation. The grouped permutation is the only correlation remedy implemented.
+
 No recommendation about which specification is correct. The point of the grid is
-that several are defensible and they disagree.
+that several are defensible, that they disagree about the reported statistic, and
+that they nonetheless agree about the substantive ordering once the statistic is
+measured on blocks rather than single constructed indices.
 
 ## Licence
 

@@ -8,14 +8,20 @@ from sklearn.metrics import r2_score, roc_auc_score
 
 from .config import (
     BOOTSTRAP_RESAMPLES,
+    FEATURE_BLOCKS,
     FOCAL_FEATURE,
     PV_COLUMNS,
     RANDOM_SEED,
     TOP_K,
     Specification,
 )
-from .models import build_model, feature_importances, fit_model
-from .pooling import bootstrap_variance, pool_rubin
+from .models import (
+    build_model,
+    feature_importances,
+    fit_model,
+    grouped_permutation_importance,
+)
+from .pooling import bootstrap_variance, brr_variance, pool_rubin
 from .preprocessing import Splits, make_target
 
 
@@ -68,6 +74,21 @@ def run_single_pv(
     variance = bootstrap_variance(
         metric_fn, y_test, y_score, eval_weights, BOOTSTRAP_RESAMPLES, seed
     )
+    design_variance = (
+        brr_variance(metric_fn, y_test, y_score, splits.rep_test, value)
+        if splits.rep_test is not None and spec.weighting == "weighted"
+        else None
+    )
+    blocks = grouped_permutation_importance(
+        model,
+        splits.x_test,
+        y_test,
+        eval_weights,
+        spec.target_form,
+        FEATURE_BLOCKS,
+        metric_fn,
+        seed=seed,
+    )
     importances = feature_importances(
         model,
         splits.x_test,
@@ -77,7 +98,7 @@ def run_single_pv(
         splits.feature_names,
         seed=seed,
     )
-    return value, variance, importances
+    return value, variance, importances, blocks, design_variance
 
 
 def run_cell(
@@ -93,20 +114,31 @@ def run_cell(
     columns = [PV_COLUMNS[0]] if spec.pv_handling == "pv1_only" else PV_COLUMNS
 
     values, variances, importance_rows = [], [], []
+    block_rows, design_variances = [], []
     for offset, column in enumerate(columns):
-        value, variance, importances = run_single_pv(
+        value, variance, importances, blocks, design_variance = run_single_pv(
             spec, splits, pv_frame[column], seed=seed + offset
         )
         values.append(value)
         variances.append(variance)
         importance_rows.append(importances)
+        block_rows.append(blocks)
+        if design_variance is not None:
+            design_variances.append(design_variance)
 
     pooled = pool_rubin(values, variances)
+    design_pooled = pool_rubin(values, design_variances) if design_variances else None
     mean_importance = np.mean(np.vstack(importance_rows), axis=0)
 
     order = np.argsort(mean_importance)[::-1]
     ranked = [splits.feature_names[i] for i in order]
     focal_rank = ranked.index(FOCAL_FEATURE) + 1 if FOCAL_FEATURE in ranked else None
+
+    block_means = {
+        f"block_{name}": float(np.mean([row.get(name, np.nan) for row in block_rows]))
+        for name in FEATURE_BLOCKS
+    }
+    block_order = sorted(block_means, key=lambda k: block_means[k], reverse=True)
 
     _, metric_name = metric_for(spec.target_form)
     record = spec.as_dict()
@@ -114,6 +146,11 @@ def run_cell(
         {
             "metric_name": metric_name,
             "n_fits": len(columns),
+            **block_means,
+            "top_block": block_order[0].replace("block_", "") if block_order else None,
+            "design_ci_low": design_pooled.ci_low if design_pooled else None,
+            "design_ci_high": design_pooled.ci_high if design_pooled else None,
+            "design_se": design_pooled.standard_error if design_pooled else None,
             "top_k": ranked[:TOP_K],
             "focal_feature": FOCAL_FEATURE,
             "focal_rank": focal_rank,
